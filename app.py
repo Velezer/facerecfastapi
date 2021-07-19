@@ -36,8 +36,8 @@ def encode_all_images():
     }
 
 
-@app.post("/upload/")
-def upload(name: str, file: UploadFile = File(...)):
+@app.post("/register/")
+def register(name: str, file: UploadFile = File(...)):
     start = time.perf_counter()
 
     file.filename = '.'.join([name, 'jpg'])
