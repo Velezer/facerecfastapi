@@ -99,11 +99,10 @@ def classify_face(unknown_face_encodings, encoded_faces: Dict):
         distances = face_distances.argsort()
         for d in distances:
             if face_distances[d] > 0.6:
-                data['detected'].append('Unknown')
-                data['distances'].append(face_distances[d])
                 break
             name = known_face_names[d]
             data['detected'].append(name)
             data['distances'].append(face_distances[d])
+        data['detected'].append('Unknown')
 
     return data

@@ -48,7 +48,7 @@ def register(name: str = Form(...), file: UploadFile = File(...)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='This is not an image')
     
-    compress_img('/'.join([_dir_faces, file.filename]), (300, 300), 30)
+    compress_img('/'.join([_dir_faces, file.filename]), (320, 240), 30)
     encoded_faces = encode_faces('/'.join([_dir_faces, file.filename]))
     delete_file('/'.join([_dir_encoded, file.filename]))
 
