@@ -70,6 +70,7 @@ def encode_faces(img_path: str):
 
     flocations = fr.face_locations(face, 2)
     result = fr.face_encodings(face, flocations, model='large')
+    # result = fr.face_encodings(face, model='small')
 
     return result
 
@@ -91,18 +92,18 @@ def classify_face(unknown_face_encodings, encoded_faces: Dict):
     data = {
         'detected': [],
         'distances': [],
-        'nearest': []
     }
     for face_encoding in unknown_face_encodings:
         face_distances = fr.face_distance(faces_encoded, face_encoding)
-        best_match_index = np.argmin(face_distances)
-        nearest = known_face_names[best_match_index]
-        if face_distances[best_match_index] <= 0.62:
-            name = nearest
-        else:
-            name = "Unknown"
-        data['detected'].append(name)
-        data['distances'].append(min(face_distances))
-        data['nearest'].append(nearest)
+
+        distances = face_distances.argsort()
+        for d in distances:
+            if face_distances[d] > 0.6:
+                data['detected'].append('Unknown')
+                data['distances'].append(face_distances[d])
+                break
+            name = known_face_names[d]
+            data['detected'].append(name)
+            data['distances'].append(face_distances[d])
 
     return data

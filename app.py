@@ -49,7 +49,7 @@ def register(name: str, file: UploadFile = File(...)):
         delete_file('/'.join([_dir_faces, file.filename]))
         return {
             'status': 'fail',
-            'message': 'Detected more than one faces. Please, upload an image which contain only one face',
+            'message': 'Detected more than one faces. Only support single face',
             'response_time': time.perf_counter()-start
         }
     if number_faces_detected < 1:
@@ -77,13 +77,18 @@ def find(excludes: List[str] = [], file: UploadFile = File(...)):
     server_images = list_files(_dir_encoded, '.jpg')
     encoded_faces = get_pickled_images(server_images)
     for x in excludes:
-        encoded_faces.pop(x, 'deleted')
+        encoded_faces.pop(x, None)
 
     save_file(_dir, 'unknowns.jpg', file.file)
     compress_img('unknowns.jpg', (200, 200), 30)
     unknowns = encode_faces('unknowns.jpg')
-
     number_faces_detected = len(unknowns)
+    if number_faces_detected > 1:
+        return {
+            'status': 'fail',
+            'message': 'Detected more than one faces. Only support single face',
+            'response_time': time.perf_counter()-start
+        }
     if number_faces_detected < 1:
         return {
             'status': 'fail',
@@ -92,11 +97,11 @@ def find(excludes: List[str] = [], file: UploadFile = File(...)):
         }
 
     data = classify_face(unknowns, encoded_faces)
+    data['excludes'] = excludes
 
     end = time.perf_counter()
     return {
         'status': 'success',
         'data': data,
-        'excludes': excludes,
         'response_time': end-start
     }
