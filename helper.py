@@ -57,7 +57,7 @@ def get_pickled_images(images: List) -> Dict:
     dict = {}
     for img in images:
         filename = img.split('/')[-1]  # name.jpg
-        nama = filename.split(".")[0]  # name
+        nama = filename.split(".jpg")[0]  # name
         filename = '/'.join([_dir_encoded, filename])
         dict[nama] = read_pickle(filename)
 
