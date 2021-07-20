@@ -80,7 +80,7 @@ def compress_img(img_path: str, size: Tuple, quality: int):
     img_size = img.size
     if img_size[0] > size[0] or img_size[1] > size[1]:
         img.thumbnail(size, Image.ANTIALIAS)
-    if img.mode == 'RGBA':  # png A for alpha which is transparency
+    if img.mode == 'RGBA':  # png support, A stands for alpha which is transparency
         img = img.convert('RGB')
     img.save(img_path, quality=quality)
 

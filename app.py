@@ -10,30 +10,30 @@ from typing import List
 app = FastAPI(debug=True)
 
 
-@app.get("/")
-def encode_all_images():
-    start = time.perf_counter()
+# @app.get("/")
+# def encode_all_images():
+#     start = time.perf_counter()
 
-    server_images = list_files(_dir_faces, '.jpg')
+#     server_images = list_files(_dir_faces, '.jpg')
 
-    total_faces = len(server_images)
-    number_encoded = total_faces
-    for filename in server_images:
-        encoded_faces = encode_faces('/'.join([_dir_faces, filename]))
+#     total_faces = len(server_images)
+#     number_encoded = total_faces
+#     for filename in server_images:
+#         encoded_faces = encode_faces('/'.join([_dir_faces, filename]))
 
-        number_faces_detected = len(encoded_faces)
-        if number_faces_detected > 1 or number_faces_detected < 1:
-            number_encoded -= 1
-            continue
+#         number_faces_detected = len(encoded_faces)
+#         if number_faces_detected > 1 or number_faces_detected < 1:
+#             number_encoded -= 1
+#             continue
 
-        save_pickle('/'.join([_dir_encoded, filename]), encoded_faces[0])
+#         save_pickle('/'.join([_dir_encoded, filename]), encoded_faces[0])
 
-    end = time.perf_counter()
-    return {
-        'status': 'success',
-        'message': f'Encoded {number_encoded} of {total_faces} images',
-        'response_time': end-start
-    }
+#     end = time.perf_counter()
+#     return {
+#         'status': 'success',
+#         'message': f'Encoded {number_encoded} of {total_faces} images',
+#         'response_time': end-start
+#     }
 
 
 @app.post("/register/")
@@ -76,12 +76,11 @@ def find(excludes: List[str] = [], file: UploadFile = File(...)):
 
     server_images = list_files(_dir_encoded, '.jpg')
     encoded_faces = get_pickled_images(server_images)
-    for x in excludes:
-        encoded_faces.pop(x, None)
 
     save_file(_dir, 'unknowns.jpg', file.file)
     compress_img('unknowns.jpg', (200, 200), 30)
     unknowns = encode_faces('unknowns.jpg')
+    
     number_faces_detected = len(unknowns)
     if number_faces_detected > 1:
         return {
@@ -97,7 +96,6 @@ def find(excludes: List[str] = [], file: UploadFile = File(...)):
         }
 
     data = classify_face(unknowns, encoded_faces)
-    data['excludes'] = excludes
 
     end = time.perf_counter()
     return {
