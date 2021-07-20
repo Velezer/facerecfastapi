@@ -42,6 +42,7 @@ def register(name: str, file: UploadFile = File(...)):
 
     file.filename = '.'.join([name, 'jpg'])
     save_file(_dir_faces, file.filename, file.file)
+    compress_img('/'.join([_dir_faces, file.filename]), (300, 300), 30)
     encoded_faces = encode_faces('/'.join([_dir_faces, file.filename]))
 
     number_faces_detected = len(encoded_faces)
@@ -71,7 +72,7 @@ def register(name: str, file: UploadFile = File(...)):
 
 
 @app.post("/find/")
-def find(excludes: List[str] = [], file: UploadFile = File(...)):
+def find(file: UploadFile = File(...)):
     start = time.perf_counter()
 
     server_images = list_files(_dir_encoded, '.jpg')
